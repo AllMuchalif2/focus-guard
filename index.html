@@ -100,21 +100,23 @@
 
     <!-- Header -->
     <header
-      class="border-b-4 border-black bg-[#FFDE59] px-6 py-4 shadow-brutal sticky top-0 z-50"
+      class="border-b-4 border-black bg-[#FFDE59] px-4 py-2 shadow-brutal sticky top-0 z-50"
     >
       <div class="mx-auto flex max-w-4xl items-center justify-between">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <img
             src="icon.svg"
-            class="h-12 w-12 rounded-full border-3 border-black bg-white shadow-brutal p-1"
+            class="h-9 w-9 rounded-full border-3 border-black bg-white shadow-brutal p-1"
             alt="Logo"
           />
           <div>
-            <h1 class="text-2xl font-bold tracking-tight text-black">
+            <h1
+              class="text-xl font-bold tracking-tight text-black leading-none"
+            >
               FOCUS GUARD
             </h1>
             <p
-              class="text-[10px] font-bold text-black/60 tracking-[0.2em] uppercase"
+              class="text-[9px] font-bold text-black/60 tracking-[0.2em] uppercase leading-none"
             >
               AI Pomodoro
             </p>
@@ -123,11 +125,11 @@
         <!-- Status Badge -->
         <div
           id="status-badge"
-          class="flex items-center gap-2 rounded-full border-3 border-black bg-white px-4 py-2 font-mono text-sm font-bold shadow-brutal"
+          class="flex items-center gap-2 rounded-full border-3 border-black bg-white px-3 py-1 font-mono text-xs font-bold shadow-brutal"
         >
           <span
             id="status-dot"
-            class="inline-block h-3 w-3 rounded-full bg-gray-400 border-2 border-black"
+            class="inline-block h-2 w-2 rounded-full bg-gray-400 border-2 border-black"
           ></span>
           <span id="status-text" class="uppercase">SIAP</span>
         </div>
@@ -136,32 +138,32 @@
 
     <main class="mx-auto max-w-4xl px-6 py-8">
       <!-- Settings Panel -->
-      <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Timer Settings & Controls -->
         <div
-          class="bg-white border-3 border-black rounded-xl p-6 shadow-brutal flex flex-col justify-between gap-4"
+          class="bg-white border-3 border-black rounded-xl p-4 shadow-brutal flex flex-col justify-between gap-3"
         >
           <div>
             <label
-              class="block font-bold mb-2 uppercase text-xs tracking-widest text-gray-500"
+              class="block font-bold mb-1 uppercase text-[10px] tracking-widest text-gray-500"
               >Durasi Fokus</label
             >
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
               <input
                 type="number"
                 id="timer-input"
                 min="1"
                 max="120"
                 value="25"
-                class="w-full text-center text-3xl font-black border-3 border-black rounded-lg p-2 shadow-brutal focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+                class="w-full text-center text-2xl font-black border-3 border-black rounded-lg p-1 shadow-brutal focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
               />
-              <span class="font-mono font-bold text-xl">MIN</span>
+              <span class="font-mono font-bold text-lg">MIN</span>
             </div>
           </div>
 
           <button
             id="btn-toggle"
-            class="w-full group relative px-6 py-3 bg-[#50C878] border-3 border-black rounded-xl font-black text-lg shadow-brutal transition-all hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-0 active:shadow-brutal"
+            class="w-full group relative px-4 py-2 bg-[#50C878] border-3 border-black rounded-xl font-black text-base shadow-brutal transition-all hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-0 active:shadow-brutal"
           >
             START SESSION
           </button>
@@ -169,26 +171,26 @@
 
         <!-- Notification Settings -->
         <div
-          class="bg-white border-3 border-black rounded-xl p-6 shadow-brutal flex items-center justify-between"
+          class="bg-white border-3 border-black rounded-xl p-4 shadow-brutal flex items-center justify-between"
         >
           <div>
-            <h3 class="font-bold text-lg">Notifikasi Desktop</h3>
-            <p class="text-xs text-gray-500">
+            <h3 class="font-bold text-base">Notifikasi Desktop</h3>
+            <p class="text-[10px] text-gray-500">
               Tampilkan notifikasi layar saat HP terlihat
             </p>
           </div>
           <div
-            class="relative inline-block w-14 mr-2 align-middle select-none transition duration-200 ease-in"
+            class="relative inline-block w-12 mr-1 align-middle select-none transition duration-200 ease-in"
           >
             <input
               type="checkbox"
               name="toggle"
               id="toggle-notification"
-              class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-black appearance-none cursor-pointer duration-200 ease-in-out right-6 top-1 checked:right-1 checked:border-[#50C878]"
+              class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-3 border-black appearance-none cursor-pointer duration-200 ease-in-out right-5 top-1 checked:right-1 checked:border-[#50C878]"
             />
             <label
               for="toggle-notification"
-              class="toggle-label block overflow-hidden h-10 rounded-full bg-gray-300 border-4 border-black cursor-pointer shadow-brutal duration-200 ease-in-out checked:bg-[#50C878]"
+              class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 border-3 border-black cursor-pointer shadow-brutal duration-200 ease-in-out checked:bg-[#50C878]"
             ></label>
           </div>
         </div>
