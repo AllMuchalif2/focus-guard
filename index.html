@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Guard - AI Pomodoro</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#FFDE59" />
+
+    <!-- Dependencies (Global for now, managed by SW cache) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ['"Space Mono"', "monospace"],
+              sans: ['"Space Grotesk"', "sans-serif"],
+            },
+            boxShadow: {
+              brutal: "4px 4px 0px 0px #000",
+              "brutal-lg": "6px 6px 0px 0px #000",
+              "brutal-xl": "8px 8px 0px 0px #000",
+            },
+            borderWidth: { 3: "3px" },
+          },
+        },
+      };
+    </script>
+
+    <!-- Fonts/Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background-color: #e8e0d4;
+        background-image: radial-gradient(#00000015 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      video {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      /* Custom Toggle Switch */
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #68d391;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #68d391;
+      }
+      /* Loading Overlay */
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: #ffde59;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen font-sans selection:bg-black selection:text-white pb-20"
+  >
+    <!-- Loading Screen -->
+    <div id="loading-overlay">
+      <div class="animate-bounce">
+        <img
+          src="icon.svg"
+          class="w-24 h-24 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] rounded-xl border-3 border-black bg-white"
+          alt="Loading..."
+        />
+      </div>
+      <h2 class="mt-6 text-2xl font-black text-black">MEMUAT SISTEM...</h2>
+      <p
+        id="loading-status"
+        class="font-mono text-sm font-bold text-black/60 mt-2 uppercase tracking-widest"
+      >
+        Inisialisasi AI...
+      </p>
+    </div>
+
+    <!-- Header -->
+    <header
+      class="border-b-4 border-black bg-[#FFDE59] px-6 py-4 shadow-brutal sticky top-0 z-50"
+    >
+      <div class="mx-auto flex max-w-4xl items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img
+            src="icon.svg"
+            class="h-12 w-12 rounded-full border-3 border-black bg-white shadow-brutal p-1"
+            alt="Logo"
+          />
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-black">
+              FOCUS GUARD
+            </h1>
+            <p
+              class="text-[10px] font-bold text-black/60 tracking-[0.2em] uppercase"
+            >
+              AI Pomodoro
+            </p>
+          </div>
+        </div>
+        <!-- Status Badge -->
+        <div
+          id="status-badge"
+          class="flex items-center gap-2 rounded-full border-3 border-black bg-white px-4 py-2 font-mono text-sm font-bold shadow-brutal"
+        >
+          <span
+            id="status-dot"
+            class="inline-block h-3 w-3 rounded-full bg-gray-400 border-2 border-black"
+          ></span>
+          <span id="status-text" class="uppercase">SIAP</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 py-8">
+      <!-- Settings Panel -->
+      <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Timer Settings & Controls -->
+        <div
+          class="bg-white border-3 border-black rounded-xl p-6 shadow-brutal flex flex-col justify-between gap-4"
+        >
+          <div>
+            <label
+              class="block font-bold mb-2 uppercase text-xs tracking-widest text-gray-500"
+              >Durasi Fokus</label
+            >
+            <div class="flex items-center gap-4">
+              <input
+                type="number"
+                id="timer-input"
+                min="1"
+                max="120"
+                value="25"
+                class="w-full text-center text-3xl font-black border-3 border-black rounded-lg p-2 shadow-brutal focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+              />
+              <span class="font-mono font-bold text-xl">MIN</span>
+            </div>
+          </div>
+
+          <button
+            id="btn-toggle"
+            class="w-full group relative px-6 py-3 bg-[#50C878] border-3 border-black rounded-xl font-black text-lg shadow-brutal transition-all hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-0 active:shadow-brutal"
+          >
+            START SESSION
+          </button>
+        </div>
+
+        <!-- Notification Settings -->
+        <div
+          class="bg-white border-3 border-black rounded-xl p-6 shadow-brutal flex items-center justify-between"
+        >
+          <div>
+            <h3 class="font-bold text-lg">Notifikasi Desktop</h3>
+            <p class="text-xs text-gray-500">
+              Tampilkan notifikasi layar saat HP terlihat
+            </p>
+          </div>
+          <div
+            class="relative inline-block w-14 mr-2 align-middle select-none transition duration-200 ease-in"
+          >
+            <input
+              type="checkbox"
+              name="toggle"
+              id="toggle-notification"
+              class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-black appearance-none cursor-pointer duration-200 ease-in-out right-6 top-1 checked:right-1 checked:border-[#50C878]"
+            />
+            <label
+              for="toggle-notification"
+              class="toggle-label block overflow-hidden h-10 rounded-full bg-gray-300 border-4 border-black cursor-pointer shadow-brutal duration-200 ease-in-out checked:bg-[#50C878]"
+            ></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Display -->
+      <div
+        class="relative mx-auto max-w-2xl bg-black border-4 border-black rounded-2xl shadow-brutal-xl overflow-hidden mb-12"
+      >
+        <!-- Timer Overlay (Always Visible) -->
+        <div
+          class="absolute top-4 right-4 z-20 bg-black/80 backdrop-blur border-2 border-white/20 rounded-lg px-4 py-2"
+        >
+          <span
+            id="timer-display"
+            class="font-mono text-4xl font-black text-white tracking-widest"
+            >25:00</span
+          >
+        </div>
+
+        <!-- Camera Container -->
+        <div
+          id="video-container"
+          class="relative bg-black min-h-[400px] hidden"
+        >
+          <!-- Video injected here by JS -->
+          <div
+            id="detection-overlay"
+            class="absolute inset-0 z-10 hidden flex flex-col items-center justify-center bg-red-500/30 backdrop-blur-sm"
+          >
+            <div
+              class="bg-black border-4 border-white p-6 rounded-xl shadow-2xl animate-bounce"
+            >
+              <p class="text-4xl">⚠️</p>
+            </div>
+            <h2
+              class="mt-4 text-3xl font-black text-white drop-shadow-[0_4px_0_#000]"
+            >
+              HP TERDETEKSI!
+            </h2>
+          </div>
+        </div>
+
+        <!-- Placeholder (When Idle) -->
+        <div
+          id="video-placeholder"
+          class="min-h-[400px] flex flex-col items-center justify-center bg-[#1a1a1a] p-12 text-center"
+        >
+          <div class="mb-6">
+            <img
+              src="icon.svg"
+              class="w-32 h-32 opacity-80 rounded-xl"
+              alt="Icon"
+            />
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-2">Mode Fokus</h2>
+          <p class="text-gray-400 max-w-xs mx-auto">
+            Nyalakan kamera, atur waktu, dan jauhkan HP anda untuk mulai
+            bekerja.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Main Logic -->
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

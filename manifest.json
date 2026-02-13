@@ -1,0 +1,16 @@
+{
+  "name": "Focus Guard - AI Phone Detector",
+  "short_name": "FocusGuard",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#e8e0d4",
+  "theme_color": "#FFDE59",
+  "description": "AI-powered focus tool that detects phones and helps you stay on task.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
