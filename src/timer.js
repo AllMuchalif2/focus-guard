@@ -31,11 +31,8 @@ export class Timer {
 
   reset(newDurationMinutes) {
     this.stop();
-    this.duration = (newDurationMinutes || this.duration) * 60; // update duration if provided, else keep old
+    this.duration = (newDurationMinutes || this.duration) * 60;
     this.remaining = this.duration;
-    // convert to minutes for reset? No, duration is seconds.
-    // wait, logic in constructor: durationMinutes * 60.
-    // here: newDurationMinutes * 60. Correct.
     if (this.onTick) this.onTick(this.remaining);
   }
 
