@@ -45,7 +45,13 @@
     />
 
     <style>
+      html {
+        overflow: hidden;
+        height: 100%;
+      }
       body {
+        overflow: hidden;
+        height: 100%;
         background-color: #e8e0d4;
         background-image: radial-gradient(#00000015 1px, transparent 1px);
         background-size: 20px 20px;
@@ -78,14 +84,14 @@
     </style>
   </head>
   <body
-    class="min-h-screen font-sans selection:bg-black selection:text-white pb-20"
+    class="font-sans selection:bg-black selection:text-white overflow-hidden h-screen"
   >
     <!-- Loading Screen -->
     <div id="loading-overlay">
       <div class="animate-bounce">
         <img
           src="icon.svg"
-          class="w-24 h-24 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] rounded-xl border-3 border-black bg-white"
+          class="w-24 h-24 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] rounded-xl border-3 border-black bg-[#FFDE59]"
           alt="Loading..."
         />
       </div>
@@ -106,7 +112,7 @@
         <div class="flex items-center gap-2">
           <img
             src="icon.svg"
-            class="h-9 w-9 rounded-full border-3 border-black bg-white shadow-brutal p-1"
+            class="h-9 w-9 rounded-xl border-3 border-black shadow-brutal p-1 bg-[#FFDE59]"
             alt="Logo"
           />
           <div>
@@ -136,34 +142,40 @@
       </div>
     </header>
 
-    <main class="mx-auto max-w-4xl px-6 py-8">
+    <main class="mx-auto max-w-2xl px-6 py-4">
       <!-- Settings Panel -->
-      <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
         <!-- Timer Settings & Controls -->
         <div
-          class="bg-white border-3 border-black rounded-xl p-4 shadow-brutal flex flex-col justify-between gap-3"
+          class="bg-white border-3 border-black rounded-xl p-2.5 shadow-brutal flex flex-col justify-between gap-2"
         >
           <div>
             <label
-              class="block font-bold mb-1 uppercase text-[10px] tracking-widest text-gray-500"
+              class="block font-bold mb-0.5 uppercase text-[9px] tracking-widest text-gray-500"
               >Durasi Fokus</label
             >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <input
                 type="number"
                 id="timer-input"
                 min="1"
                 max="120"
                 value="25"
-                class="w-full text-center text-2xl font-black border-3 border-black rounded-lg p-1 shadow-brutal focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
+                oninput="
+                  this.value = Math.min(
+                    120,
+                    Math.max(1, parseInt(this.value) || 1),
+                  )
+                "
+                class="w-full text-center text-lg font-black border-3 border-black rounded-lg px-2 py-0.5 shadow-brutal focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all"
               />
-              <span class="font-mono font-bold text-lg">MIN</span>
+              <span class="font-mono font-bold text-sm">MIN</span>
             </div>
           </div>
 
           <button
             id="btn-toggle"
-            class="w-full group relative px-4 py-2 bg-[#50C878] border-3 border-black rounded-xl font-black text-base shadow-brutal transition-all hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-0 active:shadow-brutal"
+            class="w-full group relative px-3 py-1.5 bg-[#50C878] border-3 border-black rounded-lg font-black text-sm shadow-brutal transition-all hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-0 active:shadow-brutal"
           >
             START SESSION
           </button>
@@ -171,10 +183,10 @@
 
         <!-- Notification Settings -->
         <div
-          class="bg-white border-3 border-black rounded-xl p-4 shadow-brutal flex items-center justify-between"
+          class="bg-white border-3 border-black rounded-xl p-2.5 shadow-brutal flex items-center justify-between"
         >
           <div>
-            <h3 class="font-bold text-base">Notifikasi Desktop</h3>
+            <h3 class="font-bold text-sm">Notifikasi Desktop</h3>
             <p class="text-[10px] text-gray-500">
               Tampilkan notifikasi layar saat HP terlihat
             </p>
@@ -196,9 +208,28 @@
         </div>
       </div>
 
+      <!-- Camera Selector Card -->
+      <div
+        class="mb-4 bg-white border-3 border-black rounded-xl p-2.5 shadow-brutal"
+      >
+        <label
+          class="block font-bold mb-1 uppercase text-[9px] tracking-widest text-gray-500"
+          >Pilih Kamera</label
+        >
+        <select
+          id="camera-select"
+          class="w-full border-3 border-black rounded-lg px-2 py-1 font-mono text-xs font-bold shadow-brutal focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-none transition-all bg-white"
+        >
+          <option value="">-- Memuat daftar kamera... --</option>
+        </select>
+        <p id="camera-switch-hint" class="text-[10px] text-gray-400 mt-1.5">
+          Mulai sesi terlebih dahulu untuk mengganti kamera.
+        </p>
+      </div>
+
       <!-- Main Display -->
       <div
-        class="relative mx-auto max-w-2xl bg-black border-4 border-black rounded-2xl shadow-brutal-xl overflow-hidden mb-12"
+        class="relative mx-auto bg-black border-4 border-black rounded-2xl shadow-brutal-xl overflow-hidden mb-6 aspect-video"
       >
         <!-- Timer Overlay (Always Visible) -->
         <div
@@ -212,10 +243,7 @@
         </div>
 
         <!-- Camera Container -->
-        <div
-          id="video-container"
-          class="relative bg-black min-h-[400px] hidden"
-        >
+        <div id="video-container" class="absolute inset-0 bg-black hidden">
           <!-- Video injected here by JS -->
           <div
             id="detection-overlay"
@@ -237,17 +265,17 @@
         <!-- Placeholder (When Idle) -->
         <div
           id="video-placeholder"
-          class="min-h-[400px] flex flex-col items-center justify-center bg-[#1a1a1a] p-12 text-center"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1a1a] p-8 text-center"
         >
-          <div class="mb-6">
+          <div class="mb-3">
             <img
               src="icon.svg"
-              class="w-32 h-32 opacity-80 rounded-xl"
+              class="w-20 h-20 opacity-80 rounded-xl"
               alt="Icon"
             />
           </div>
-          <h2 class="text-2xl font-bold text-white mb-2">Mode Fokus</h2>
-          <p class="text-gray-400 max-w-xs mx-auto">
+          <h2 class="text-xl font-bold text-white mb-1">Mode Fokus</h2>
+          <p class="text-gray-400 text-sm max-w-xs mx-auto">
             Nyalakan kamera, atur waktu, dan jauhkan HP anda untuk mulai
             bekerja.
           </p>
